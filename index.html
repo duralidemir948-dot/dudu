@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Moderne Kunstgalerie</title>
+
+<style>
+:root {
+    --bg: #0e0e0e;
+    --fg: #eaeaea;
+    --muted: #888;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 60px 20px 20px;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+header p {
+    color: var(--muted);
+}
+
+/* Kategorien */
+.filters {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.filters button {
+    background: none;
+    border: 1px solid var(--muted);
+    color: var(--fg);
+    padding: 8px 18px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: 0.3s;
+}
+
+.filters button:hover,
+.filters button.active {
+    background: var(--fg);
+    color: #000;
+}
+
+/* Galerie */
+.gallery {
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.item {
+    cursor: pointer;
+}
+
+.item img {
+    width: 100%;
+    border-radius: 6px;
+    transition: transform 0.4s;
+}
+
+.item:hover img {
+    transform: scale(1.03);
+}
+
+.item h3 {
+    margin: 12px 0 4px;
+    font-weight: 400;
+}
+
+.item p {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 80%;
+    margin-bottom: 20px;
+}
+
+.lightbox .caption {
+    text-align: center;
+}
+
+.close, .nav {
+    position: absolute;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.close {
+    top: 20px;
+    right: 30px;
+}
+
+.nav.left {
+    left: 30px;
+    top: 50%;
+}
+
+.nav.right {
+    right: 30px;
+    top: 50%;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>MEINE KUNST</h1>
+    <p>Moderne Galerie</p>
+</header>
+
+<div class="filters">
+    <button class="active" onclick="filterItems('all')">Alle</button>
+    <button onclick="filterItems('malerei')">Malerei</button>
+    <button onclick="filterItems('foto')">Fotografie</button>
+</div>
+
+<div class="gallery" id="gallery">
+    <div class="item malerei" onclick="openLightbox(0)">
+        <img src="bild1.jpg">
+        <h3>Werk I</h3>
+        <p>Öl auf Leinwand</p>
+    </div>
+
+    <div class="item foto" onclick="openLightbox(1)">
+        <img src="bild2.jpg">
+        <h3>Werk II</h3>
+        <p>Fotografie</p>
+    </div>
+
+    <div class="item malerei" onclick="openLightbox(2)">
+        <img src="bild3.jpg">
+        <h3>Werk III</h3>
+        <p>Acryl</p>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <span class="close" onclick="closeLightbox()">×</span>
+    <span class="nav left" onclick="changeImage(-1)">‹</span>
+    <span class="nav right" onclick="changeImage(1)">›</span>
+    <img id="lightbox-img">
+    <div class="caption">
+        <h3 id="caption-title"></h3>
+        <p id="caption-text"></p>
+    </div>
+</div>
+
+<script>
+const items = document.querySelectorAll(".item");
+let current = 0;
+
+function openLightbox(index) {
+    current = index;
+    showImage();
+    document.getElementById("lightbox").style.display = "flex";
+}
+
+function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+}
+
+function showImage() {
+    const img = items[current].querySelector("img").src;
+    document.getElementById("lightbox-img").src = img;
+    document.getElementById("caption-title").innerText =
+        items[current].querySelector("h3").innerText;
+    document.getElementById("caption-text").innerText =
+        items[current].querySelector("p").innerText;
+}
+
+function changeImage(dir) {
+    current = (current + dir + items.length) % items.length;
+    showImage();
+}
+
+function filterItems(cat) {
+    document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+    event.target.classList.add("active");
+
+    items.forEach(item => {
+        item.style.display =
+            cat === "all" || item.classList.contains(cat)
+            ? "block"
+            : "none";
+    });
+}
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowRight") changeImage(1);
+    if (e.key === "ArrowLeft") changeImage(-1);
+});
+</script>
+
+</body>
+</html>
