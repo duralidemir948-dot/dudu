@@ -1,2 +1,2 @@
-# dudu
-art gallery of dudu
+# DUDU
+art rental gallery
